@@ -1,0 +1,23 @@
+.listings-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.listings-page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+    .listings-page-header h1 {
+        font-size: 2.5rem;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .listings-page-header p {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+    }
