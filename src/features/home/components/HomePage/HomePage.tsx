@@ -3,6 +3,7 @@ import SearchBar from '../../../../components/SearchBar/SearchBar';
 import ReasoningBox from '../ReasoningBox/ReasoningBox';
 import './HomePage.css';
 import { getCompletion } from '../../../../services/openRouterService';
+import { fetchPropertiesByLocation } from '../../../../services/rentcastService';
 import { useSearchContext } from '../../../../context/SearchContext';
 import type { SearchResult } from '../../../../context/SearchContext';
 
@@ -130,10 +131,40 @@ const HomePage: React.FC<HomePageProps> = () => {
                 return;
             }
 
+            // --- Step 1.5: Fetch from RentCast API (if configured) ---
+            const locationString = [parsedLocation.city, parsedLocation.state, parsedLocation.country].filter(Boolean).join(', ');
+
+            if (parsedLocation.city && parsedLocation.state) {
+                addLog({
+                    type: 'info',
+                    step: 'API Integration',
+                    content: `Fetching properties from RentCast API for ${parsedLocation.city}, ${parsedLocation.state}...`
+                });
+
+                const apiProperties = await fetchPropertiesByLocation(
+                    parsedLocation.city,
+                    parsedLocation.state
+                );
+
+                if (apiProperties.length > 0) {
+                    searchContext.setApiListings(apiProperties);
+                    addLog({
+                        type: 'info',
+                        step: 'API Integration',
+                        content: `Found ${apiProperties.length} properties from RentCast API`
+                    });
+                } else {
+                    addLog({
+                        type: 'info',
+                        step: 'API Integration',
+                        content: 'No properties from API, continuing with web search...'
+                    });
+                }
+            }
+
             // --- Step 2: Identify Websites ---
             setSearchStep('identifying_sites');
             const siteIdStep = 'Step 2: Identify Websites';
-            const locationString = [parsedLocation.city, parsedLocation.state, parsedLocation.country].filter(Boolean).join(', ');
             const siteIdQuery = `Real estate listings in ${locationString}`;
 
             addLog({ type: 'info', step: siteIdStep, content: `Found location: ${locationString}. Now finding the best real estate sites...` });

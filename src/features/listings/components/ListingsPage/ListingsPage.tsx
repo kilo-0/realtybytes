@@ -4,38 +4,42 @@ import { mockListings } from '../../data/mockListings';
 import './ListingsPage.css';
 
 const ListingsPage: React.FC = () => {
-    const { searchResults, searchQuery, clearSearch } = useSearchContext();
-    const hasSearchResults = searchResults.length > 0;
+    const { searchResults, apiListings, searchQuery, clearSearch } = useSearchContext();
 
-    // Determine what to display
-    const displayData = hasSearchResults ? searchResults : mockListings;
-    const isShowingSearchResults = hasSearchResults;
+    // Priority: API data > URL results > mock data
+    const hasApiData = apiListings.length > 0;
+    const hasUrlResults = searchResults.length > 0;
+
+    const displayData = hasApiData
+        ? apiListings
+        : hasUrlResults
+        ? searchResults
+        : mockListings;
+
+    const dataSource = hasApiData ? 'api' : hasUrlResults ? 'urls' : 'mock';
 
     return (
         <div className="listings-page">
             <div className="listings-page-header">
                 <h1>
-                    {isShowingSearchResults
-                        ? `Search Results: ${searchQuery}`
-                        : 'Browse Property Listings'}
+                    {hasApiData && `${apiListings.length} Properties in ${searchQuery}`}
+                    {!hasApiData && hasUrlResults && `${searchResults.length} Properties Found`}
+                    {!hasApiData && !hasUrlResults && 'Browse Property Listings'}
                 </h1>
                 <p>
-                    {isShowingSearchResults
-                        ? `Found ${searchResults.length} properties`
-                        : 'Explore featured properties or use AI search to find listings tailored to your specific needs.'}
+                    {hasApiData && 'Real-time property data from RentCast API'}
+                    {!hasApiData && hasUrlResults && 'Click links to view property details'}
+                    {!hasApiData && !hasUrlResults && 'Explore featured properties or use AI search to find listings tailored to your specific needs.'}
                 </p>
-                {isShowingSearchResults && (
-                    <button
-                        onClick={clearSearch}
-                        className="clear-search-btn"
-                    >
-                        Clear Search Results
+                {(hasApiData || hasUrlResults) && (
+                    <button onClick={clearSearch} className="clear-search-btn">
+                        Clear Search & View Featured Listings
                     </button>
                 )}
             </div>
             <PropertyGrid
                 listings={displayData}
-                isSearchResults={isShowingSearchResults}
+                isSearchResults={dataSource === 'urls'}
             />
         </div>
     );
