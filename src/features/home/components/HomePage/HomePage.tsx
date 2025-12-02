@@ -3,6 +3,8 @@ import SearchBar from '../../../../components/SearchBar/SearchBar';
 import ReasoningBox from '../ReasoningBox/ReasoningBox';
 import './HomePage.css';
 import { getCompletion } from '../../../../services/openRouterService';
+import { useSearchContext } from '../../../../context/SearchContext';
+import type { SearchResult } from '../../../../context/SearchContext';
 
 // Define types locally to avoid import issues
 type SearchStep = 'idle' | 'extracting_location' | 'identifying_sites' | 'searching_sites' | 'complete' | 'error';
@@ -43,6 +45,7 @@ interface LocationResponse {
 }
 
 const HomePage: React.FC<HomePageProps> = () => {
+    const searchContext = useSearchContext();
     const [query, setQuery] = useState('');
     const [preferences, setPreferences] = useState<Set<Preference>>(new Set());
 
@@ -174,6 +177,15 @@ const HomePage: React.FC<HomePageProps> = () => {
                     allResults[site] = parsedUrls.urls;
                 }
             }
+
+            // Flatten results into array of SearchResult objects
+            const flatResults: SearchResult[] = Object.entries(allResults).flatMap(
+                ([site, urls]) => urls.map(url => ({ url, site }))
+            );
+
+            // Save to context for ListingsPage
+            searchContext.setSearchResults(flatResults);
+            searchContext.setSearchQuery(fullUserQuery);
 
             setSearchResults(allResults);
             setSearchStep('complete');

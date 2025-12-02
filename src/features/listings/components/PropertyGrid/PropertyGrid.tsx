@@ -1,10 +1,19 @@
-import React from 'react';
-import { mockListings } from '../../data/mockListings';
 import PropertyCard from '../PropertyCard/PropertyCard';
+import SearchResultCard from '../SearchResultCard/SearchResultCard';
 import { useFavorites } from '../../hooks/useFavorites';
+import type { Listing } from '../../types';
+import type { SearchResult } from '../../../../context/SearchContext';
 import './PropertyGrid.css';
 
-const PropertyGrid: React.FC = () => {
+interface PropertyGridProps {
+    listings: (Listing | SearchResult)[];
+    isSearchResults?: boolean;
+}
+
+const PropertyGrid: React.FC<PropertyGridProps> = ({
+    listings,
+    isSearchResults = false
+}) => {
     const { favorites, toggleFavorite, isLoading } = useFavorites();
 
     if (isLoading) {
@@ -13,14 +22,23 @@ const PropertyGrid: React.FC = () => {
 
     return (
         <div className="property-grid">
-            {mockListings.map((listing) => (
-                <PropertyCard
-                    key={listing.id}
-                    listing={listing}
-                    isFavorite={favorites.has(listing.id)}
-                    onToggleFavorite={toggleFavorite}
-                />
-            ))}
+            {listings.map((item, index) => {
+                // Check if item is a SearchResult (has 'url' and 'site' properties)
+                if (isSearchResults && 'url' in item && 'site' in item) {
+                    return <SearchResultCard key={index} result={item as SearchResult} />;
+                } else {
+                    // Regular Listing
+                    const listing = item as Listing;
+                    return (
+                        <PropertyCard
+                            key={listing.id}
+                            listing={listing}
+                            isFavorite={favorites.has(listing.id)}
+                            onToggleFavorite={toggleFavorite}
+                        />
+                    );
+                }
+            })}
         </div>
     );
 };
