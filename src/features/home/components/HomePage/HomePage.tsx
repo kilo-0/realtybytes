@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import SearchBar from '../../../../components/SearchBar/SearchBar';
 import ReasoningBox from '../ReasoningBox/ReasoningBox';
 import './HomePage.css';
@@ -42,7 +42,7 @@ interface LocationResponse {
     message?: string;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
+const HomePage: React.FC<HomePageProps> = () => {
     const [query, setQuery] = useState('');
     const [preferences, setPreferences] = useState<Set<Preference>>(new Set());
 
