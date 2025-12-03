@@ -4,7 +4,7 @@ import { mockListings } from '../../data/mockListings';
 import './ListingsPage.css';
 
 const ListingsPage: React.FC = () => {
-    const { searchResults, apiListings, searchQuery, clearSearch } = useSearchContext();
+    const { searchResults, apiListings, searchQuery, isLoading, clearSearch } = useSearchContext();
 
     // Priority: API data > URL results > mock data
     const hasApiData = apiListings.length > 0;
@@ -37,10 +37,20 @@ const ListingsPage: React.FC = () => {
                     </button>
                 )}
             </div>
-            <PropertyGrid
-                listings={displayData}
-                isSearchResults={dataSource === 'urls'}
-            />
+
+            {isLoading && (
+                <div className="loading-indicator">
+                    <div className="loading-spinner"></div>
+                    <p>Searching for properties...</p>
+                </div>
+            )}
+
+            {!isLoading && (
+                <PropertyGrid
+                    listings={displayData}
+                    isSearchResults={dataSource === 'urls'}
+                />
+            )}
         </div>
     );
 };

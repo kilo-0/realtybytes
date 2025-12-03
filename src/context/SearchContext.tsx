@@ -14,6 +14,8 @@ interface SearchContextValue {
   setApiListings: (listings: Listing[]) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
   clearSearch: () => void;
 }
 
@@ -23,11 +25,13 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [apiListings, setApiListings] = useState<Listing[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const clearSearch = () => {
     setSearchResults([]);
     setApiListings([]);
     setSearchQuery('');
+    setIsLoading(false);
   };
 
   return (
@@ -38,6 +42,8 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
       setApiListings,
       searchQuery,
       setSearchQuery,
+      isLoading,
+      setIsLoading,
       clearSearch
     }}>
       {children}

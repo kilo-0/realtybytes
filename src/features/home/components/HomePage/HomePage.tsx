@@ -102,6 +102,7 @@ const HomePage: React.FC<HomePageProps> = () => {
         setReasoningLog([]);
         setSearchResults({});
         setSearchError(null);
+        searchContext.setIsLoading(true);
 
         const promptParts = [];
         if (query.trim()) {
@@ -227,6 +228,8 @@ const HomePage: React.FC<HomePageProps> = () => {
             setSearchError(errorMessage);
             setSearchStep('error');
             addLog({ type: 'error', step: "Critical Failure", content: errorMessage });
+        } finally {
+            searchContext.setIsLoading(false);
         }
     };
 

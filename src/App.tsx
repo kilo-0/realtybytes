@@ -5,6 +5,7 @@ import Footer from './components/Footer/Footer';
 import HomePage from './features/home/components/HomePage/HomePage';
 import ListingsPage from './features/listings/components/ListingsPage/ListingsPage';
 import { SearchProvider } from './context/SearchContext';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 type Page = 'home' | 'listings';
 
@@ -17,14 +18,16 @@ function App() {
     };
 
     return (
-        <SearchProvider>
-            <Header onNavigate={navigate} />
-            <main>
-                {currentPage === 'home' && <HomePage onSearch={() => navigate('listings')} />}
-                {currentPage === 'listings' && <ListingsPage />}
-            </main>
-            <Footer />
-        </SearchProvider>
+        <ErrorBoundary>
+            <SearchProvider>
+                <Header onNavigate={navigate} />
+                <main>
+                    {currentPage === 'home' && <HomePage onSearch={() => navigate('listings')} />}
+                    {currentPage === 'listings' && <ListingsPage />}
+                </main>
+                <Footer />
+            </SearchProvider>
+        </ErrorBoundary>
     );
 }
 
